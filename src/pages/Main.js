@@ -1,68 +1,26 @@
-import {Lightning, Router, Events} from "@lightningjs/sdk";
-import {Button2} from "../lib/automotive/components";
+import {Lightning} from "@lightningjs/sdk";
+import {NavigationItem, RadioItem, MultimediaItem, PhoneItem, SettingsItem} from "../components/items";
+import List from "../components/List";
 
 export default class Main extends Lightning.Component{
     static _template(){
         return {
-            w: 1920, h: 1080, rect:true,
-            colorTop: 0xff000428, colorBottom: 0xff6699ff,
-            Label:{
-                alpha: 0.4,
-                x: 960, y: 550, mount: 0.5,
-                text:{
-                    text:'Automotive interaction demo', fontSize: 60, fontFace:'julius'
-                }
-            },
-            Interaction:{
-                alpha: 0.8,
-                x: 960, y: 610, mount: 0.5,
-                text:{
-                    text:'Tap to start', fontSize: 30, fontFace:'julius'
-                }
-            },
-            Buttons:{
-                children:[
-                    {type: Button2, mount:0.5, y: 540, x: 50 },
-                    {type: Button2, mount:0.5, y: 540, x: 1850, scaleX: -1},
+            rect: true, w: 1920, h: 1080, color: 0xff000000,
+            List: {
+                type: List,
+                mountY: 0.5, y: 540, h: 500,
+                items: [
+                    NavigationItem,
+                    RadioItem,
+                    MultimediaItem,
+                    PhoneItem,
+                    SettingsItem
                 ]
             }
         }
     }
 
-    _onSingleTap(recording){
-        this.tag("Interaction").text = "single tap"
-    }
-
-    _onDoubleTap(recording){
-        this.tag("Interaction").text = "double tap"
-    }
-
-    _onMultiTap(recording){
-        this.tag("Interaction").text = `${recording.fingersTouched} fingers tap`
-    }
-
-    _onLongpress(recording){
-        this.tag("Interaction").text = `${recording.fingersTouched} fingers longpress`
-    }
-
-    swipeLeft(recording){
-        Router.navigate("buttonsdemo")
-    }
-
-    swipeRight(recording){
-        Router.navigate("rotatedcollision")
-    }
-
-    pageTransition(pageIn, pageOut){
-        const outHash = pageOut[Router.symbols.hash];
-        if(outHash === "listdemo"){
-            return "left"
-        }else if(outHash === "mapdemo"){
-            return "down"
-        }
-        return "right"
+    _active() {
+        this.tag("List").show(true);
     }
 }
-
-
-

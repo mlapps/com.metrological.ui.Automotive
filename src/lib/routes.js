@@ -1,5 +1,5 @@
 import {
-    Main, ButtonDemo, ListDemo, MapDemo, RotatedCollision, DistanceDemo
+    Main, Splash
 } from '@/pages';
 
 
@@ -11,7 +11,7 @@ export default {
     },
     root: async () => {
         return {
-            path: "main"
+            path: "splash"
         };
     },
     beforeEachRoute: (from, to) => {
@@ -22,23 +22,12 @@ export default {
     },
     routes: [
         {
+            path: 'splash',
+            component: Splash,
+        },
+        {
             path: 'main',
             component: Main,
-        }, {
-            path: 'buttonsdemo',
-            component: ButtonDemo,
-        }, {
-            path: 'listdemo',
-            component: ListDemo,
-        }, {
-            path: 'mapdemo',
-            component: MapDemo,
-        }, {
-            path: 'rotatedcollision',
-            component: RotatedCollision,
-        }, {
-            path: 'distancedemo',
-            component: DistanceDemo,
         }
     ]
 };

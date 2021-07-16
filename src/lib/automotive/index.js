@@ -219,7 +219,11 @@ export const dispatch = (event, recording) => {
     const touched = getAllTouchedElements(recording.fingers);
     if (touched.length) {
         touched.forEach((element) => {
-            element[event](recording);
+            try {
+                element[event](recording);
+            } catch (e) {
+                // silent
+            }
         });
         lastTouchedElements = touched;
     }
@@ -243,7 +247,11 @@ export const sticky = (event, recording) => {
     }
     if (stickyElements.length) {
         stickyElements.forEach((element) => {
-            handled = element[event](recording);
+            try {
+                handled = element[event](recording);
+            } catch (e) {
+                // silent
+            }
         });
     }
 

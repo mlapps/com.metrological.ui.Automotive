@@ -7,28 +7,20 @@ import {getConfigMap} from "./lib/automotive/helpers";
 export default class App extends Router.App {
     static getFonts() {
         return [
-            {family: 'julius', url: Utils.asset('fonts/JuliusSansOne-Regular.ttf'), descriptors: {}},
+            {family: 'Light', url: Utils.asset('fonts/KoHo-Light.ttf'), descriptors: {}},
+            {family: 'Regular', url: Utils.asset('fonts/KoHo-Regular.ttf'), descriptors: {}},
+            {family: 'Bold', url: Utils.asset('fonts/KoHo-Bold.ttf'), descriptors: {}},
+            {family: 'CorporateABold', url: Utils.asset('fonts/Corporate-A-Bold.ttf'), descriptors: {}}
         ];
     }
 
     _setup() {
         initAutomotive(this.application, getConfigMap());
         Router.startRouter(routes, this);
-        this.initListeners();
     }
 
     static _template() {
         return {
-            Background: {
-                rect: true, color: 0xff000000, w: 1920, h: 1080,
-                Label: {
-                    color: 0xffffffff, mount: 0.5,
-                    x: 960, y: 540,
-                    text: { fontFace: 'julius',
-                        text: '' , fontSize:80
-                    }
-                }
-            },
             // we MUST spread the base-class template
             // if we want to provide Widgets.
             ...super._template(),
@@ -65,52 +57,5 @@ export default class App extends Router.App {
         return states;
     }
 
-    initListeners() {
-        /**
-         * Swipes will not be called on the touched
-         * element but broadcasted so listeners can
-         * subscribe to the event
-         */
-        Events.listen('App', 'swipeLeft', (recording) => {
-            const page = Router.getActivePage();
-            page.animation({
-                duration: 2, actions: [
-                    {p: 'x', v: {0: 0, 0.1: -1920, 0.8: -1920, 1: 0}}
-                ]
-            }).start();
-            this.tag("Label").text = `${recording.fingersTouched} FINGERS SWIPE LEFT`;
-        });
-
-        Events.listen('App', 'swipeRight', (recording) => {
-            const page = Router.getActivePage();
-            page.animation({
-                duration: 2, actions: [
-                    {p: 'x', v: {0: 0, 0.1: 1920, 0.8: 1920, 1: 0}}
-                ]
-            }).start();
-
-            this.tag("Label").text = `${recording.fingersTouched} FINGERS SWIPE RIGHT`;
-        });
-
-        Events.listen('App', 'swipeUp', (recording) => {
-            const page = Router.getActivePage();
-            page.animation({
-                duration: 2, actions: [
-                    {p: 'y', v: {0: 0, 0.1: -1080, 0.8: -1080, 1: 0}}
-                ]
-            }).start();
-            this.tag("Label").text = `${recording.fingersTouched} FINGERS SWIPE UP`;
-        });
-
-        Events.listen('App', 'swipeDown', (recording) => {
-            const page = Router.getActivePage();
-            page.animation({
-                duration: 2, actions: [
-                    {p: 'y', v: {0: 0, 0.1: 1080, 0.8: 1080, 1: 0}}
-                ]
-            }).start();
-            this.tag("Label").text = `${recording.fingersTouched} FINGERS SWIPE DOWN`;
-        });
-    }
 }
 
