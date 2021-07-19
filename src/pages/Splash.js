@@ -12,7 +12,7 @@ export default class Splash extends Lightning.Component{
                     src: Utils.asset("images/grill.png")
                 },
                 Logo: {
-                    mount: 0.5, x: 950, y: 540, w: 382, h: 382, rtt: true,
+                    mount: 0.5, x: 950, y: 554, w: 382, h: 382, rtt: true,
                     Circle: {
                         src: Utils.asset("images/logo-circle.png")
                     },

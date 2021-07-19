@@ -5,10 +5,14 @@ import List from "../components/List";
 export default class Main extends Lightning.Component{
     static _template(){
         return {
-            rect: true, w: 1920, h: 1080, color: 0xff000000,
+            // rect: true, w: 1920, h: 1080, color: 0xff000000,
             List: {
                 type: List,
-                mountY: 0.5, y: 540, h: 500,
+                mountY: 0.5,
+                y: 540,
+                h: 500,
+                w: 1920,
+                listPosition: {x: 70},
                 items: [
                     NavigationItem,
                     RadioItem,

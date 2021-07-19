@@ -15,15 +15,24 @@ export default class ExpandableItem extends Lightning.Component {
     }
 
     _init() {
+        this.application.on("lock", (v)=> {
+            this._setState(v?"Collapsed.Locked":"Collapsed")
+        });
+
         this._setState("Collapsed");
     }
 
     collapse() {
+        this.application.emit("lock", false);
+
+        const duration = 0.3;
+        const timingFunction = `cubic-bezier(.2,.6,0,1.2)`;
+
         this.patch({
             smooth: {
                 w: 364,
                 h: 500,
-                x: this._worldX - this._originalX - this.parent.finalX,
+                x: [this._startX, {duration, timingFunction}],
                 y: 0,
                 zIndex: 1
             }
@@ -33,16 +42,17 @@ export default class ExpandableItem extends Lightning.Component {
     }
 
     expand() {
-        this._originalX = this.finalX;
-        this._worldX = this.core.renderContext.px;
-        this._worldY = this.core.renderContext.py;
+        this.application.emit("lock", true);
+
+        const duration = 0.3;
+        const timingFunction = `cubic-bezier(.2,.6,0,1.2)`;
 
         this.patch({
             smooth: {
                 w: 1780,
                 h: 940,
-                x: 70 - this._worldX,
-                y: 70 - this._worldY,
+                x: [0, {duration, timingFunction}],
+                y: 70 - this.core.renderContext.py,
                 zIndex: 2
             }
         });
@@ -73,17 +83,30 @@ export default class ExpandableItem extends Lightning.Component {
             },
             class Collapsed extends this {
                 _onSingleTap() {
-                    console.log("1");
                     this.expand();
+                }
+                static _states() {
+                    return [
+                        class Locked extends this {
+                            _onSingleTap() {}
+                        }
+                    ]
                 }
             },
             class Expanded extends this {
                 _onSingleTap() {
-                    console.log("1");
                     this.collapse();
                 }
             }
         ];
+    }
+
+    static get width() {
+        return 364;
+    }
+
+    static get offset() {
+        return 40;
     }
 
 }

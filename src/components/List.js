@@ -5,16 +5,16 @@ import {findStraightLine} from "../lib/automotive/analyzer";
 export default class List extends Lightning.Component {
     static _template() {
         return {
-            w: 1920, h: 500,
-            Items:{
-                x: 70,
-                flex: {}
-            }
+            Items:{}
         };
     }
 
     _init() {
-        this._startX = 70;
+        this.application.on("lock", (v)=> {
+            this._setState(v?"Locked":"Unlocked")
+        });
+
+        this._setState("Unlocked");
     }
 
     _active(){
@@ -23,68 +23,57 @@ export default class List extends Lightning.Component {
         );
     }
 
-    _onDrag(recording){
-        const {delta} = recording;
-
-        this.items.forEach((item)=> {
-            item.lock(true);
-        })
-
-        this.tag("Items").x = this._startX + delta.x;
-    }
-
-    _onDragEnd(){
-        this._timeout = setTimeout(()=> {
-            this._startX = this.tag("Items").x;
-            this._unlock();
-            this._checkBoundsPosition(this._startX);
-        }, 120);
-    }
-
-    _unlock() {
-        this.items.forEach((item)=> {
-            item.lock(false);
-        })
-    }
-
-    swipeLeft(recording){
-        this._position(-1, recording);
-    }
-
-    swipeRight(recording){
-        this._position(1, recording);
-    }
-
-    _position(direction, recording) {
+    _swipePosition(direction, recording) {
         clearTimeout(this._timeout);
         const {duration, distance } = findStraightLine(recording.firstFinger);
-        const force = distance / duration * 500;
 
-        const position = this.tag("Items").x + (direction * force);
-        this.tag("Items").setSmooth('x', position, {
-            duration: recording.duration/100, timingFunction: 'ease-out'
+        this.items.forEach((item, index)=> {
+            const width = this._items[index].width;
+            const offset = this._items[index].offset;
+            const force = distance / duration * (width + offset);
+            const position = item.x + (direction * force);
+
+            item.setSmooth('x', position , {
+                duration: 0.6, timingFunction:'ease-out'
+            });
+            item.startX = position;
+            item.lock(false);
         });
-        this._startX = position;
-        this._checkBoundsPosition(position)
-        this._unlock();
+
+        this._snapToPosition();
     }
 
-    _checkBoundsPosition(xPosition) {
-        if (xPosition > 70) {
-            this.tag("Items").setSmooth('x', 70, {
-                duration: 0.6, timingFunction: 'ease-out'
+    _snapToPosition() {
+        const firstItem = this.items[0];
+        const lastItem = this.items[this.items.length-1];
+
+        if (firstItem.startX > 0) {
+            this.items.forEach((item, index)=> {
+                const width = this._items[index].width;
+                const offset = this._items[index].offset;
+
+                item.setSmooth('x', index * (width + offset), {
+                    duration: 0.3, timingFunction:'ease-out'
+                });
+                item.startX = index * (width + offset);
             });
-            this._startX = 70;
-        } else if (Math.abs(xPosition) > this.tag("Items").finalW - 474) {
-            this.tag("Items").setSmooth('x', -(this.tag("Items").finalW - 474), {
-                duration: 0.6, timingFunction: 'ease-out'
+        } else if (lastItem.startX < 0) {
+            this.items.forEach((item, index)=> {
+                const width = this._items[index].width;
+                const offset = this._items[index].offset;
+
+                item.setSmooth('x', (index * (width + offset)) - ((this.items.length-1) * (width + offset)), {
+                    duration: 0.3, timingFunction:'ease-out'
+                });
+                item.startX = (index * (width + offset)) - ((this.items.length-1) * (width + offset));
             });
-            this._startX = -(this.tag("Items").finalW - 474);
         }
     }
 
 
     set items(items) {
+        this._items = items;
+
         this.tag("Items").patch({
             children: this.create({items})
         });
@@ -94,13 +83,19 @@ export default class List extends Lightning.Component {
         return this.tag("Items").children;
     }
 
+    set listPosition({x=0,y=0}) {
+        this.tag("Items").patch({x,y});
+    }
+
     create({items}) {
         return items.map((item, index) => {
+            const x = index * (item.width + item.offset);
             return {
                 type: item,
                 alpha: 0,
                 scale: 0.9,
-                flexItem: {marginRight: 40}
+                x,
+                startX: x
             }
         });
     }
@@ -116,6 +111,37 @@ export default class List extends Lightning.Component {
                 }
             })
         });
+    }
+
+    static _states() {
+        return [
+            class Locked extends this {},
+            class Unlocked extends this {
+                _onDrag(recording){
+                    const {delta} = recording;
+
+                    this.items.forEach((item)=> {
+                        item.lock(true);
+                        item.x = item.startX + delta.x;
+                    })
+                }
+                _onDragEnd(){
+                    this._timeout = setTimeout(()=> {
+                        this.items.forEach((item)=> {
+                            item.startX = item.x;
+                            item.lock(false);
+                        })
+                        this._snapToPosition();
+                    }, 120);
+                }
+                swipeLeft(recording){
+                    this._swipePosition(-1, recording);
+                }
+                swipeRight(recording){
+                    this._swipePosition(1, recording);
+                }
+            }
+        ];
     }
 
 }
