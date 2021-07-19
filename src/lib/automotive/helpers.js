@@ -220,3 +220,7 @@ export const getConfigMap = () => {
         return config;
     }, new Map());
 };
+
+export const isFunction = v => {
+    return typeof v === 'function'
+}

@@ -1,4 +1,4 @@
-import {Lightning} from "@lightningjs/sdk";
+import {Img, Lightning} from "@lightningjs/sdk";
 
 export default class Item extends Lightning.Component {
     static _template() {
@@ -7,7 +7,7 @@ export default class Item extends Lightning.Component {
             Label:{
                 mount:0.5, x: 110, y:150,
                 text:{
-                    text:'list item', fontSize:25
+                    text:'', fontSize:25
                 }
             }
         };
@@ -49,5 +49,9 @@ export default class Item extends Lightning.Component {
 
     set idx(v){
         this.tag("Label").text = `${v}`
+    }
+
+    set image(v){
+        this.texture = Img(v).original();
     }
 }

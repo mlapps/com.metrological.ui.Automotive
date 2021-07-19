@@ -1,7 +1,7 @@
 import {Registry, Log} from "@lightningjs/sdk";
 import {createRecording} from "./models";
 import {analyzeEnded, resetRecordings} from "./analyzer";
-import {getTouchedElements, getAllTouchedElements} from "./helpers";
+import {getAllTouchedElements, isFunction} from "./helpers";
 
 let application = null;
 export let config = new Map();
@@ -254,7 +254,6 @@ export const sticky = (event, recording) => {
             }
         });
     }
-
     return handled;
 };
 

@@ -1,5 +1,4 @@
 import {Lightning} from "@lightningjs/sdk";
-import {createVector} from "../../models";
 import {Item} from "../index";
 import {findStraightLine} from "../../analyzer";
 
@@ -7,67 +6,88 @@ export default class List extends Lightning.Component {
     static _template() {
         return {
             w: 1920, h: 400,
-            Items:{
+            Items: {
                 y: 100, x: 30
             }
         };
     }
 
-    _init(){
-        this.tag("Items").children = new Array(50).fill('').map((el, index)=>{
+    _init() {
+        const children = new Array(50).fill('').map((el, index) => {
             return {
                 type: Item, x: index * 240, idx: index, startX: index * 240
-            }
+            };
         });
-        this.maxListDistance = 50 * 240;
+
+        this.add(children);
     }
 
-    _active(){
-        this._current = createVector(
-            this.tag("Items").x,this.tag("Items").y
-        );
+    add(children) {
+        this.tag("Items").children = children;
     }
 
-    _onDrag(recording){
+    _onDrag(recording) {
         const {delta} = recording;
-        this.items.forEach((item)=>{
+        this.items.forEach((item) => {
             item.x = item.startX + delta.x;
         });
     }
 
-    _onDragEnd(){
-        this.items.forEach((item)=>{
+    _onDragEnd() {
+        this.items.forEach((item) => {
             item.startX = item.x;
         });
     }
 
-    swipeLeft(recording){
-        const {duration, distance } = findStraightLine(recording.firstFinger);
-        const force = distance / duration * 500;
+    swipeLeft(recording) {
+        this.swipe(recording, -1);
+    }
 
-        this.items.forEach((item)=>{
-            const position = item.x - (force)
-            item.setSmooth('x', position , {
-                duration:0.6, timingFunction:'ease-out'
+    swipeRight(recording) {
+        this.swipe(recording, 1);
+    }
+
+    swipe(recording, dir) {
+        const {duration, distance} = findStraightLine(recording.firstFinger);
+        let force = distance / duration * 500 * dir;
+        const bounds = this.items[dir === 1 ? 0 : this.items.length - 1].x + force;
+        let outOfBounds = false;
+
+        // prevent list going out of bounds
+        if (dir === 1 && bounds > 0) {
+            force = force - bounds;
+            outOfBounds = true;
+        } else if (dir === -1 && bounds < 1650) {
+            const diff = 1650 - bounds;
+            force += diff;
+            outOfBounds = true;
+        }
+
+        // prevent extreme force
+        if (isNaN(force)) {
+            force = 0;
+        }
+
+        // position items accordingly to force
+        this.items.forEach((item) => {
+            const position = item.x + (force);
+            item.setSmooth('x', position, {
+                duration: 0.5,
+                timingFunction: outOfBounds ? 'cubic-bezier(.8,-0.5,0,2.19)' : 'ease-out'
             });
             item.startX = position;
         });
     }
 
-    swipeRight(recording){
-        const {duration, distance } = findStraightLine(recording.firstFinger);
-        const force = distance / duration * 500;
-
-        this.items.forEach((item)=>{
-            const position = item.x + (force)
-            item.setSmooth('x', position , {
-                duration:0.6, timingFunction:'ease-out'
-            });
-            item.startX = position;
-        });
+    swipeUp() {
+        // block
     }
 
-    get items(){
+    swipeDown() {
+        // block
+    }
+
+    get items() {
         return this.tag("Items").children;
     }
 }

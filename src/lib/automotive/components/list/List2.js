@@ -1,73 +1,109 @@
 import {Lightning} from "@lightningjs/sdk";
 import {createVector} from "../../models";
-import {Item} from "../index";
+import {Item1} from "../index";
 import {findStraightLine} from "../../analyzer";
+import {smoothstep} from "../../helpers";
 
 export default class List extends Lightning.Component {
     static _template() {
         return {
             w: 1920, h: 400,
-            Items:{
-                y: 100, x: 30
+            Items: {
+                y: 30,
             }
         };
     }
 
-    _init(){
-        this.tag("Items").children = new Array(50).fill('').map((el, index)=>{
+    _init() {
+        this.itemWidth = 500;
+        this.tag("Items").children = new Array(300).fill('').map((el, index) => {
+            const x = index * (this.itemWidth / 2);
             return {
-                type: Item, x: index * 240, idx: index, startX: index * 240
-            }
+                type: Item1,
+                w: 500, h: 600,
+                x, startX: x,
+                image: `https://picsum.photos/id/${index + 30}/500/600`,
+                shader: {
+                    type: Lightning.shaders.Perspective, rx: 0, fudge: .2
+                }
+            };
         });
-        this.maxListDistance = 50 * 240;
-    }
 
-    _active(){
-        this._current = createVector(
-            this.tag("Items").x,this.tag("Items").y
+        this.items.forEach(
+            (item) => this.update(item)
         );
     }
 
-    _onDrag(recording){
-        const {delta} = recording;
-        this.items.forEach((item)=>{
-            item.x = item.startX + delta.x;
-        });
+    _active() {
+        this._current = createVector(
+            this.tag("Items").x, this.tag("Items").y
+        );
     }
 
-    _onDragEnd(){
-        this.items.forEach((item)=>{
+    _onDrag(recording) {
+        const {delta} = recording;
+
+        this.items.forEach(
+            (item) => this.update(item, item.startX + delta.x)
+        );
+    }
+
+    _onDragEnd() {
+        this.items.forEach((item) => {
             item.startX = item.x;
         });
     }
 
-    swipeLeft(recording){
-        const {duration, distance } = findStraightLine(recording.firstFinger);
-        const force = distance / duration * 500;
+    swipeLeft(recording) {
+        this.swipe(recording, -1);
+    }
 
-        this.items.forEach((item)=>{
-            const position = item.x - (force)
-            item.setSmooth('x', position , {
-                duration:0.6, timingFunction:'ease-out'
+    swipeRight(recording) {
+        this.swipe(recording, 1);
+    }
+
+    swipe(rec, dir){
+        const {duration, distance} = findStraightLine(rec.firstFinger);
+        let force = distance / duration * 500 * dir;
+
+        this.items.forEach((item) => {
+            const position = item.x + (force);
+            item.setSmooth('x', position, {
+                duration: 0.6, timingFunction: 'ease-out'
             });
+            item.transition('x').on('progress', () => this.update(item));
             item.startX = position;
         });
     }
 
-    swipeRight(recording){
-        const {duration, distance } = findStraightLine(recording.firstFinger);
-        const force = distance / duration * 500;
+    update(item, x) {
+        // if x is set we update it's position
+        // else we use it's current position
+        // for calculation
+        if (x) {
+            item.x = x;
+        } else {
+            x = item.x;
+        }
 
-        this.items.forEach((item)=>{
-            const position = item.x + (force)
-            item.setSmooth('x', position , {
-                duration:0.6, timingFunction:'ease-out'
-            });
-            item.startX = position;
+        const center = 1920 / 2 - (this.itemWidth / 2);
+        const absDis = Math.abs(x - center);
+        const offset = absDis / center;
+        const zIndex = 40 - offset * 10;
+        const scale = 1 - smoothstep(0, center, absDis);
+        const alpha = smoothstep(0.1, 0.7, scale);
+
+        if(absDis < 960){
+           const diff = (x - center) / 500;
+           item.shader.rx = diff;
+        }
+
+        item.patch({
+            zIndex, scale, alpha
         });
     }
 
-    get items(){
+    get items() {
         return this.tag("Items").children;
     }
 }
