@@ -1,6 +1,7 @@
 import {
     Main, Splash
 } from '@/pages';
+import {Utils} from "@lightningjs/sdk";
 
 
 export default {
@@ -28,6 +29,13 @@ export default {
         {
             path: 'main',
             component: Main,
+            before: async (page) => {
+                page.data = await fetch(Utils.asset("data/test.json"))
+                    .then(response => response.json())
+                    .then((json) => {
+                        return json;
+                    });
+            }
         }
     ]
 };

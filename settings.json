@@ -1,7 +1,7 @@
 {
   "appSettings": {
     "stage": {
-      "clearColor": "0xff000000",
+      "clearColor": "0xff161819",
       "useImageWorker": true,
       "defaultFontFace:": "Regular"
     },
@@ -10,7 +10,7 @@
   "platformSettings": {
     "path": "./static",
     "log": false,
-    "showVersion": true,
+    "showVersion": false,
     "router": {
       "lazyCreate": true,
       "lazyDestroy:": false
@@ -27,7 +27,7 @@
       "swipeXTreshold": 150,
       "swipeYTreshold": 150,
       "viewportOffsetX": 0,
-      "viewportOffsetY": 57
+      "viewportOffsetY": 0
 
     },
     "imageServerUrl": "//cdn.metrological.com/image"

@@ -8,56 +8,72 @@ export default class ExpandableItem extends Lightning.Component {
         const timingFunction = `cubic-bezier(.2,.6,0,1.2)`;
 
         return {
-            rtt: true, w: 364, h: 500, rect: true, zIndex: 1,
-            shader: {type: Lightning.shaders.RoundedRectangle, radius: 4},
+            w: 500, h: 670, zIndex: 1,
+            rtt: true, shader: {type: Lightning.shaders.RoundedRectangle, radius: 12},
             transitions: addTransitions(["zIndex", "y", "x", "h", "w"], {duration, timingFunction})
         };
     }
 
     _init() {
-        this.application.on("lock", (v)=> {
-            this._setState(v?"Collapsed.Locked":"Collapsed")
+        this.application.on("lock", ({locked})=> {
+            this._setState(locked?"Collapsed.Locked":"Collapsed")
         });
 
         this._setState("Collapsed");
     }
 
     collapse() {
-        this.application.emit("lock", false);
+        this._expanded = false;
+        this.application.emit("lock", {locked: false, item: this});
 
         const duration = 0.3;
         const timingFunction = `cubic-bezier(.2,.6,0,1.2)`;
 
         this.patch({
             smooth: {
-                w: 364,
-                h: 500,
+                w: 500,
+                h: 670,
                 x: [this._startX, {duration, timingFunction}],
                 y: 0,
                 zIndex: 1
             }
         });
 
+        this.tag("Widget").setSmooth("alpha", 1, {duration: 0.2, delay: 0.1});
+        this.tag("FullScreen").setSmooth("alpha", 0, {duration: 0.1});
+        this.tag("FullScreen").setSmooth("y", 30, {duration: 0.1});
+
         this._setState("Collapsed");
     }
 
     expand() {
-        this.application.emit("lock", true);
+        this._expanded = true;
 
         const duration = 0.3;
         const timingFunction = `cubic-bezier(.2,.6,0,1.2)`;
 
-        this.patch({
-            smooth: {
-                w: 1780,
-                h: 940,
-                x: [0, {duration, timingFunction}],
-                y: 70 - this.core.renderContext.py,
-                zIndex: 2
-            }
-        });
+        this.tag("Widget").setSmooth("alpha", 0, {duration: 0.15});
+        this.tag("Widget").transition("alpha").on("finish", ()=> {
+            if (this._expanded) {
+                this.application.emit("lock", {locked: true, item: this});
 
-        this._setState("Expanded");
+                this.patch({
+                    smooth: {
+                        w: 1780,
+                        h: 940,
+                        x: [0, {duration, timingFunction}],
+                        y: 70 - this.core.renderContext.py,
+                        zIndex: 2
+                    }
+                });
+
+                this.tag("FullScreen").setSmooth("alpha", 1, {duration: 0.15});
+                this.tag("FullScreen").setSmooth("y", 0, {duration: 0.3});
+
+                this._setState("Expanded");
+            }
+        })
+
     }
 
     set startX(v) {
@@ -82,9 +98,9 @@ export default class ExpandableItem extends Lightning.Component {
                 }
             },
             class Collapsed extends this {
-                _onSingleTap() {
-                    this.expand();
-                }
+                // _onSingleTap() {
+                //     this.expand();
+                // }
                 static _states() {
                     return [
                         class Locked extends this {
@@ -94,15 +110,15 @@ export default class ExpandableItem extends Lightning.Component {
                 }
             },
             class Expanded extends this {
-                _onSingleTap() {
-                    this.collapse();
-                }
+                // _onSingleTap() {
+                //     this.collapse();
+                // }
             }
         ];
     }
 
     static get width() {
-        return 364;
+        return 500;
     }
 
     static get offset() {

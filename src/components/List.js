@@ -10,8 +10,15 @@ export default class List extends Lightning.Component {
     }
 
     _init() {
-        this.application.on("lock", (v)=> {
-            this._setState(v?"Locked":"Unlocked")
+        this.application.on("lock", ({locked, item})=> {
+            if (locked) {
+                this._activeIndex = this.items.indexOf(item);
+                this._expandList();
+                this._setState("Locked");
+            } else {
+                this._collapseList();
+                this._setState("Unlocked");
+            }
         });
 
         this._setState("Unlocked");
@@ -22,54 +29,6 @@ export default class List extends Lightning.Component {
             this.tag("Items").x,this.tag("Items").y
         );
     }
-
-    _swipePosition(direction, recording) {
-        clearTimeout(this._timeout);
-        const {duration, distance } = findStraightLine(recording.firstFinger);
-
-        this.items.forEach((item, index)=> {
-            const width = this._items[index].width;
-            const offset = this._items[index].offset;
-            const force = distance / duration * (width + offset);
-            const position = item.x + (direction * force);
-
-            item.setSmooth('x', position , {
-                duration: 0.6, timingFunction:'ease-out'
-            });
-            item.startX = position;
-            item.lock(false);
-        });
-
-        this._snapToPosition();
-    }
-
-    _snapToPosition() {
-        const firstItem = this.items[0];
-        const lastItem = this.items[this.items.length-1];
-
-        if (firstItem.startX > 0) {
-            this.items.forEach((item, index)=> {
-                const width = this._items[index].width;
-                const offset = this._items[index].offset;
-
-                item.setSmooth('x', index * (width + offset), {
-                    duration: 0.3, timingFunction:'ease-out'
-                });
-                item.startX = index * (width + offset);
-            });
-        } else if (lastItem.startX < 0) {
-            this.items.forEach((item, index)=> {
-                const width = this._items[index].width;
-                const offset = this._items[index].offset;
-
-                item.setSmooth('x', (index * (width + offset)) - ((this.items.length-1) * (width + offset)), {
-                    duration: 0.3, timingFunction:'ease-out'
-                });
-                item.startX = (index * (width + offset)) - ((this.items.length-1) * (width + offset));
-            });
-        }
-    }
-
 
     set items(items) {
         this._items = items;
@@ -115,33 +74,130 @@ export default class List extends Lightning.Component {
 
     static _states() {
         return [
-            class Locked extends this {},
+            class Locked extends this {
+                // swipeLeft(){
+                //     this.items[this._activeIndex].collapse();
+                //     this._activeIndex++;
+                //     this.items[this._activeIndex].expand();
+                //     this._expandList();
+                // }
+                // swipeRight(){
+                //     this.items[this._activeIndex].collapse();
+                //     this._activeIndex--;
+                //     this.items[this._activeIndex].expand();
+                //     this._expandList();
+                // }
+            },
             class Unlocked extends this {
-                _onDrag(recording){
-                    const {delta} = recording;
-
-                    this.items.forEach((item)=> {
-                        item.lock(true);
-                        item.x = item.startX + delta.x;
-                    })
-                }
-                _onDragEnd(){
-                    this._timeout = setTimeout(()=> {
-                        this.items.forEach((item)=> {
-                            item.startX = item.x;
-                            item.lock(false);
-                        })
-                        this._snapToPosition();
-                    }, 120);
-                }
-                swipeLeft(recording){
-                    this._swipePosition(-1, recording);
-                }
-                swipeRight(recording){
-                    this._swipePosition(1, recording);
-                }
+                // _onDrag(recording){
+                //     const {delta} = recording;
+                //
+                //     this.items.forEach((item)=> {
+                //         item.lock(true);
+                //         item.x = item.startX + delta.x;
+                //     })
+                // }
+                // _onDragEnd(){
+                //     this._timeout = setTimeout(()=> {
+                //         this.items.forEach((item)=> {
+                //             item.startX = item.x;
+                //             item.lock(false);
+                //         })
+                //         this._snapToPosition();
+                //     }, 120);
+                // }
+                // swipeLeft(recording){
+                //     this._swipePosition(-1, recording);
+                // }
+                // swipeRight(recording){
+                //     this._swipePosition(1, recording);
+                // }
             }
         ];
+    }
+
+    _swipePosition(direction, recording) {
+        clearTimeout(this._timeout);
+        const {duration, distance } = findStraightLine(recording.firstFinger);
+
+        this.items.forEach((item, index)=> {
+            const width = this._items[index].width;
+            const offset = this._items[index].offset;
+            let force = distance / duration * (width + offset);
+
+            // prevent extreme force
+            if (isNaN(force)) {
+                force = 0;
+            }
+
+            const position = item.x + (direction * force);
+
+            item.setSmooth('x', position , {
+                duration: 0.6, timingFunction:'ease-out'
+            });
+            item.startX = position;
+            item.lock(false);
+        });
+
+        this._snapToPosition();
+    }
+
+    _snapToPosition() {
+        const firstItem = this.items[0];
+        const lastItem = this.items[this.items.length-1];
+
+        if (firstItem.startX > 0) {
+            this.items.forEach((item, index)=> {
+                const width = this._items[index].width;
+                const offset = this._items[index].offset;
+
+                item.setSmooth('x', index * (width + offset), {
+                    duration: 0.3, timingFunction:'ease-out'
+                });
+
+                item.startX = index * (width + offset);
+            });
+        } else if (lastItem.startX < 0) {
+            this.items.forEach((item, index)=> {
+                const width = this._items[index].width;
+                const offset = this._items[index].offset;
+
+                item.setSmooth('x', (index * (width + offset)) - ((this.items.length-1) * (width + offset)), {
+                    duration: 0.3, timingFunction:'ease-out'
+                });
+
+                item.startX = (index * (width + offset)) - ((this.items.length-1) * (width + offset));
+            });
+        }
+    }
+
+    _expandList() {
+        const duration = 0.3;
+        const timingFunction = `cubic-bezier(.2,.6,0,1.2)`;
+
+        this.items.forEach((item, index) => {
+            const newIndex = index - this._activeIndex;
+            if (newIndex < 0) {
+                item.setSmooth('x', newIndex * 540, {
+                    duration, timingFunction
+                });
+            } else if (newIndex > 0) {
+                item.setSmooth('x', (newIndex * 540) + 1280, {
+                    duration, timingFunction
+                });
+            }
+        });
+    }
+
+    _collapseList() {
+        const duration = 0.3;
+        const timingFunction = `cubic-bezier(.2,.6,0,1.2)`;
+
+        this.items.forEach(item => {
+            item.setSmooth('x', item.startX, {
+                duration, timingFunction
+            });
+        });
     }
 
 }

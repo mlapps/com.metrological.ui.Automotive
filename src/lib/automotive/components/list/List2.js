@@ -17,7 +17,7 @@ export default class List extends Lightning.Component {
     _init() {
         this.itemWidth = 500;
         this.tag("Items").children = new Array(300).fill('').map((el, index) => {
-            const x = index * (this.itemWidth / 2);
+            const x = index * (this.itemWidth / 1.207);
             return {
                 type: Item1,
                 w: 500, h: 600,
@@ -42,7 +42,6 @@ export default class List extends Lightning.Component {
 
     _onDrag(recording) {
         const {delta} = recording;
-
         this.items.forEach(
             (item) => this.update(item, item.startX + delta.x)
         );
@@ -69,7 +68,7 @@ export default class List extends Lightning.Component {
         this.items.forEach((item) => {
             const position = item.x + (force);
             item.setSmooth('x', position, {
-                duration: 0.6, timingFunction: 'ease-out'
+                duration: 0.9, timingFunction: 'ease-out'
             });
             item.transition('x').on('progress', () => this.update(item));
             item.startX = position;
@@ -90,12 +89,11 @@ export default class List extends Lightning.Component {
         const absDis = Math.abs(x - center);
         const offset = absDis / center;
         const zIndex = 40 - offset * 10;
-        const scale = 1 - smoothstep(0, center, absDis);
+        const scale = 1 - smoothstep(0, center, absDis / 1.5);
         const alpha = smoothstep(0.1, 0.7, scale);
 
         if(absDis < 960){
-           const diff = (x - center) / 500;
-           item.shader.rx = diff;
+            item.shader.rx = (x - center) / 500;
         }
 
         item.patch({

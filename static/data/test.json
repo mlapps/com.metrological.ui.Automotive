@@ -1,0 +1,76 @@
+{
+  "albums": [
+    {
+      "cover": "foo-fighters-echoes-silence-patience-grace.png",
+      "artist": "Foo Fighters",
+      "title": "Echoes, Silence, Patience & Grace",
+      "color": "0xffff0000"
+    },
+    {
+      "cover": "foo-fighters-medicine-at-midnight.png",
+      "artist": "Foo Fighters",
+      "title": "Medicine At Midnight",
+      "color": "0xff00ff00"
+    },
+    {
+      "cover": "foo-fighters-one-by-one.png",
+      "artist": "Foo Fighters",
+      "title": "One By One",
+      "color": "0xff0000ff"
+    },
+    {
+      "cover": "foo-fighters-the-colour-and-the-shape.png",
+      "artist": "Foo Fighters",
+      "title": "The Colour And The Shape",
+      "color": "0xffff0000"
+    },
+    {
+      "cover": "gorillaz-gorillaz.png",
+      "artist": "Gorillaz",
+      "title": "Gorillaz",
+      "color": "0xff00ff00"
+    },
+    {
+      "cover": "gorillaz-humanz.png",
+      "artist": "Gorillaz",
+      "title": "Humanz",
+      "color": "0xff0000ff"
+    },
+    {
+      "cover": "gorillaz-plastic-beach.png",
+      "artist": "Gorillaz",
+      "title": "Plastic Beach",
+      "color": "0xffff0000"
+    },
+    {
+      "cover": "gorillaz-song-machine.png",
+      "artist": "Gorillaz",
+      "title": "Song Machine",
+      "color": "0xff00ff00"
+    },
+    {
+      "cover": "pearl-jam-backspacer.png",
+      "artist": "Pearl Jam",
+      "title": "Backspacer",
+      "color": "0xff0000ff"
+    },
+    {
+      "cover": "pearl-jam-lightning-bolt.png",
+      "artist": "Pearl Jam",
+      "title": "Lightning Bolt",
+      "color": "0xffff0000"
+    },
+    {
+      "cover": "pearl-jam-ten.png",
+      "artist": "Pearl Jam",
+      "title": "Ten",
+      "color": "0xff00ff00"
+    },
+    {
+      "cover": "pearl-jam-vs.png",
+      "artist": "Pearl Jam",
+      "title": "VS.",
+      "color": "0xff0000ff"
+    }
+  ]
+}

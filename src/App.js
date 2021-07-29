@@ -9,6 +9,7 @@ export default class App extends Router.App {
         return [
             {family: 'Light', url: Utils.asset('fonts/KoHo-Light.ttf'), descriptors: {}},
             {family: 'Regular', url: Utils.asset('fonts/KoHo-Regular.ttf'), descriptors: {}},
+            {family: 'SemiBold', url: Utils.asset('fonts/KoHo-SemiBold.ttf'), descriptors: {}},
             {family: 'Bold', url: Utils.asset('fonts/KoHo-Bold.ttf'), descriptors: {}},
             {family: 'CorporateABold', url: Utils.asset('fonts/Corporate-A-Bold.ttf'), descriptors: {}}
         ];
