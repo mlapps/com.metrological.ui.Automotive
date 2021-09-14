@@ -2,7 +2,6 @@ import {
     Main, ButtonDemo, ListDemo, CarouselDemo, MapDemo, RotatedCollision, DistanceDemo, ControlsDemo, TouchIdentification
 } from '@/pages';
 
-
 export default {
     root: 'main',
     routes: [
@@ -35,5 +34,21 @@ export default {
             path: 'controlsdemo',
             component: ControlsDemo,
         }
-    ]
+    ],
+    boot: async ()=>{
+        const appName = document.createElement('meta');
+        appName.name = 'apple-mobile-web-app-title';
+        appName.content = 'Automotive Ui';
+        document.head.appendChild(appName);
+
+        const touchIcon = document.createElement('link');
+        touchIcon.rel = 'apple-touch-icon';
+        touchIcon.href = 'static/homescreen-icon.png';
+        document.head.appendChild(touchIcon);
+
+        const color = document.createElement('link');
+        color.name = 'apple-mobile-web-app-status-bar-style';
+        color.content = '#03082E';
+        document.head.appendChild(color);
+    }
 };

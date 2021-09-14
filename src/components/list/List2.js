@@ -8,7 +8,7 @@ export default class List extends Lightning.Component {
         return {
             w: w=>w, h: 400,
             Items: {
-                y: 30,
+
             }
         };
     }
@@ -16,7 +16,7 @@ export default class List extends Lightning.Component {
     _init() {
         this.itemWidth = 500;
         this.tag("Items").children = new Array(300).fill('').map((el, index) => {
-            const x = index * (this.itemWidth / 1.207);
+            const x = index * (this.itemWidth / 1.107);
             return {
                 type: Item1,
                 w: 500, h: 600,
@@ -88,8 +88,8 @@ export default class List extends Lightning.Component {
         const absDis = Math.abs(x - center);
         const offset = absDis / center;
         const zIndex = 40 - offset * 10;
-        const scale = 1 - Automotive.smoothstep(0, center, absDis / 1.5);
-        const alpha = Automotive.smoothstep(0.1, 0.7, scale);
+        const scale = 1 - Automotive.smoothstep(0, center, absDis / 3);
+        const alpha = Automotive.smoothstep(0.1, 0.7, scale) + 0.3;
 
         if(absDis < settings.w / 2){
            item.shader.rx = (x - center) / (settings.w / 2);

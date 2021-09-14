@@ -4,7 +4,7 @@ import {Slider, RotatingButton, VolumeButton} from "../components";
 export default class ControlsDemo  extends Lightning.Component{
     static _template(context){
         return {
-            rect: true, w: 1920, h: 1080,
+            rect: true, w: w=>w, h: h=>h,
             colorTop: 0xff2d2e30, colorBottom: 0xff2d2e30,
             ListTitle: {
                 x: 80, y: 30, color: 0xffad999b, alpha:0.4,

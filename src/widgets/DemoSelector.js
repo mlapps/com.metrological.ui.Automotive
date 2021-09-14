@@ -71,7 +71,7 @@ export default class DemoSelector extends Lightning.Component{
                         }]
                 }
             })
-        })
+        });
 
         const page = Router.getActivePage();
         page.visible = !visible;

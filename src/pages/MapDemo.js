@@ -1,11 +1,12 @@
 import {Lightning, Router, Utils} from "@lightningjs/sdk";
+import {settings} from "../lib/automotiveSettings";
 
 export default class MapDemo  extends Lightning.Component {
     static _template() {
         return {
-            rect: true, w: 1920, h: 1080, color: 0xff000000,
+            rect: true, w: w=>w, h: h=>h, color: 0xff000000,
             Image: {
-                w: 1920, h: 1080, src: Utils.asset('images/map.jpg')
+                w: w=>w, h: h=>h, src: Utils.asset('images/map.jpg')
             },
             ButtonsTitle: {
                 x: 30, y: 20,
@@ -33,7 +34,7 @@ export default class MapDemo  extends Lightning.Component {
 
     _onPinch(record) {
         const {distance, angle} = record.pinch;
-        const level = (distance / 1920) * 6 + 1;
+        const level = (distance / settings.w) * 6 + 1;
         this.tag("Image").scale = level > 0 ? level : 0.001;
 
         this.tag("Image").rotation = angle;

@@ -41,6 +41,7 @@ export default class App extends Router.App {
                 forceZIndexContext: true, w: settings.w, h: settings.h
             },
             Widgets: {
+                zIndex:999,
                 DemoSelector:{ w: settings.w, h: settings.h,
                     type: DemoSelector
                 }
