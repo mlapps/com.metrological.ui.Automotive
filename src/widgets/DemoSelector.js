@@ -72,6 +72,9 @@ export default class DemoSelector extends Lightning.Component{
                 }
             })
         })
+
+        const page = Router.getActivePage();
+        page.visible = !visible;
     }
 
     get demos(){
@@ -112,11 +115,17 @@ class Demo extends Lightning.Component{
         this._widget = v;
     }
 
-
     _onSingleTap(){
         this._widget.setSmooth('alpha', 0)
         Router.navigate(this._link)
     }
 
-
+    /**
+     * Force refresh
+     * @private
+     */
+    _onLongpress(){
+        // @todo: remove
+        document.location.reload();
+    }
 }
