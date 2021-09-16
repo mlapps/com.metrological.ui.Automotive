@@ -28,5 +28,5 @@ During development you can use the **watcher** functionality of the _Lightning-C
 
 ## Documentation
 
-https://github.com/mlapps/Lightning-Automotive#documentation
+https://github.com/rdkcentral/Lightning-Automotive#documentation
 
