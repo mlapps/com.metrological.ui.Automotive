@@ -19,6 +19,7 @@
 
 import {Lightning} from "@lightningjs/sdk";
 import {Automotive} from "@lightningjs/automotive";
+import {settings} from "../lib/automotiveSettings";
 
 export default class Main extends Lightning.Component {
     static _template() {
@@ -41,6 +42,9 @@ export default class Main extends Lightning.Component {
             },
             Draggable:{
                 type: Draggable
+            },
+            Positions:{
+
             }
         };
     }
@@ -104,12 +108,21 @@ class Draggable extends Lightning.Component {
                     type: Lightning.shaders.RoundedRectangle, radius: 50
                 }
             },
-            Label:{ x: 120, y:25,
+            Label:{ x: 120, y:38,
                 text:{
                     fontSize:25
                 }
             }
         }
+    }
+
+    _init(){
+        this.a = this.tag("TouchArea").animation({
+            duration:1, repeat: -1, actions:[
+                {p:'alpha', rv: 1, v:{0:1, 0.65:1, 0.9:0.3, 1:1}},
+                {p:'scale', rv: 1, v:{0:1, 0.65:1, 0.9:0.9, 1:1}},
+            ]
+        });
     }
 
     _onDragStart() {
@@ -120,6 +133,7 @@ class Draggable extends Lightning.Component {
             "_onDragEnd",
             "_onDrag"
         ])
+        this.a.start();
     }
 
     _onDragEnd() {
@@ -138,13 +152,15 @@ class Draggable extends Lightning.Component {
                     {p:'scale', v:{0:1, 0.5:0.4, 1:1}}
                 ]
             }).start();
-        },2000)
+        },2500)
 
         Automotive.unlock([
             "_onDragStart",
             "_onDragEnd",
             "_onDrag"
         ])
+
+        this.a.stop();
     }
 
     _onDrag(recording) {
@@ -154,6 +170,11 @@ class Draggable extends Lightning.Component {
         this.x = startX + x;
         this.y = startY + y;
 
+        if(this.x > settings.w / 2){
+            this.tag("Label").setSmooth('x', -460, {duration:0.1});
+        }else{
+            this.tag("Label").setSmooth('x', 120, {duration:0.1});
+        }
         this.tag("Label").text = `Dragging | x: ${this.x.toFixed(5)}  y: ${this.y.toFixed(5)}`
     }
 }
