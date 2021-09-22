@@ -38,6 +38,9 @@ export default class Main extends Lightning.Component {
                 text: {
                     text: 'Interact with screen', fontSize: 50, fontFace: 'julius', textAlign:'center', lineHeight:70
                 }
+            },
+            Draggable:{
+                type: Draggable
             }
         };
     }
@@ -91,5 +94,68 @@ export default class Main extends Lightning.Component {
     }
 }
 
+class Draggable extends Lightning.Component {
+    static _template(){
+        return {
+            w: 100, h: 100, x: 100, y: 100,
+            TouchArea:{
+                w: 100, h: 100, rect: true,
+                shader:{
+                    type: Lightning.shaders.RoundedRectangle, radius: 50
+                }
+            },
+            Label:{ x: 120, y:25,
+                text:{
+                    fontSize:25
+                }
+            }
+        }
+    }
+
+    _onDragStart() {
+        this.restore = {x: this.x, y: this.y};
+        this.tag("Label").text = `Dragging started`
+        Automotive.lock([
+            "_onDragStart",
+            "_onDragEnd",
+            "_onDrag"
+        ])
+    }
+
+    _onDragEnd() {
+        this.restore = {x: this.x, y: this.y};
+        setTimeout(()=>{
+            this.patch({
+                smooth:{
+                    x: 100, y: 100
+                },
+                Label:{
+                    text:''
+                }
+            })
+            this.animation({
+                duration:0.2, actions:[
+                    {p:'scale', v:{0:1, 0.5:0.4, 1:1}}
+                ]
+            }).start();
+        },2000)
+
+        Automotive.unlock([
+            "_onDragStart",
+            "_onDragEnd",
+            "_onDrag"
+        ])
+    }
+
+    _onDrag(recording) {
+        const {x: startX, y: startY} = this.restore;
+        const {x, y} = recording.delta;
+
+        this.x = startX + x;
+        this.y = startY + y;
+
+        this.tag("Label").text = `Dragging | x: ${this.x.toFixed(5)}  y: ${this.y.toFixed(5)}`
+    }
+}
 
 
