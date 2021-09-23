@@ -23,7 +23,6 @@ import routes from "./lib/routes";
 import {settings} from "./lib/automotiveSettings";
 import {DemoSelector, Settings} from "./widgets";
 
-
 export default class App extends Router.App {
     static getFonts() {
         return [

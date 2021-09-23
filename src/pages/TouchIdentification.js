@@ -20,6 +20,7 @@
 import {Lightning, Utils, Router} from "@lightningjs/sdk";
 import {Automotive} from "@lightningjs/automotive";
 import {settings} from "../lib/automotiveSettings";
+import {Overlay} from "../components";
 
 export default class Main extends Lightning.Component {
     static _template() {
@@ -40,13 +41,6 @@ export default class Main extends Lightning.Component {
                     text: 'Interact with screen', fontSize: 50, fontFace: 'julius', textAlign:'center', lineHeight:70
                 }
             },
-            Draggable:{
-                type: Draggable
-            },
-            SettingsIcon:{
-                type: SettingButton,
-                y: 70, x: settings.w - 140,
-            },
             Positions:{
                 x: 50, y:50,
                 text:{
@@ -60,6 +54,16 @@ export default class Main extends Lightning.Component {
             V:{
                 rect: true, w: 2, h: settings.h,
                 color:0xffffffff, alpha: 0
+            },
+            Overlay:{
+                type: Overlay,
+            },
+            Draggable:{
+                type: Draggable
+            },
+            SettingsIcon:{
+                type: SettingButton,
+                y: 70, x: settings.w - 140,
             }
         };
 
