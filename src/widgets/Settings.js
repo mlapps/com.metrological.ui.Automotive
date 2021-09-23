@@ -18,8 +18,7 @@
  */
 
 import {Lightning, Registry, Router, Utils} from "@lightningjs/sdk";
-// @todo: correct import
-import {Automotive} from "../../../../Lightning-Automotive";
+import {Automotive} from "@lightningjs/automotive";
 import {settings} from "../lib/automotiveSettings";
 import {Slider} from "../components";
 
@@ -119,7 +118,7 @@ export default class Settings extends Lightning.Component{
                         min, max, width:settings.w / 4,
                         startValue, steps,
                         onChange(value){
-
+                            Automotive.updateConfig(prop, value)
                         }
                     }
                 },
