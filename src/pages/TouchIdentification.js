@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import {Lightning} from "@lightningjs/sdk";
+import {Lightning, Utils, Router} from "@lightningjs/sdk";
 import {Automotive} from "@lightningjs/automotive";
 import {settings} from "../lib/automotiveSettings";
 
@@ -43,10 +43,56 @@ export default class Main extends Lightning.Component {
             Draggable:{
                 type: Draggable
             },
+            SettingsIcon:{
+                type: SettingButton,
+                y: 70, x: settings.w - 140,
+            },
             Positions:{
-
+                x: 50, y:50,
+                text:{
+                    fontSize:25
+                }
+            },
+            H:{
+                rect: true, w: settings.w, h: 2,
+                color:0xffffffff, alpha: 0
+            },
+            V:{
+                rect: true, w: 2, h: settings.h,
+                color:0xffffffff, alpha: 0
             }
         };
+
+    }
+
+    _init(){
+        this.stage.on('position',({x, y, c})=>{
+            this.patch({
+                Label:{
+                    smooth:{
+                        alpha: c ? 0.2: 0
+                    }
+                },
+                Interaction:{
+                    smooth:{
+                        alpha: c ? 1: 0
+                    }
+                },
+                SettingsIcon:{
+                    smooth:{
+                        alpha: c ? 1: 0
+                    }
+                },
+                Positions:{
+                    text: c ? '' : `x: ${x.toFixed(5)} y: ${y.toFixed(5)}`,
+                    smooth:{
+                        alpha: c ? 0: 1
+                    }
+                },
+                H:{ y:y + 35, alpha: c ? 0 : 1 },
+                V:{ x:x + 35, alpha: c ? 0 : 1 }
+            })
+        })
     }
 
     _onSingleTap(recording) {
@@ -98,42 +144,47 @@ export default class Main extends Lightning.Component {
     }
 }
 
+class SettingButton extends Lightning.Component {
+    static _template() {
+        return {
+            w: 70, h:70,
+            src: Utils.asset('images/touch-settings.png')
+        }
+    }
+
+    _onSingleTap(){
+        const page = Router.getActivePage();
+        const {settings} = page.widgets;
+        settings.patch({
+            smooth:{
+                alpha:[1, {duration:0.2}],
+                x: [0, {duration:0.2}]
+            }
+        })
+    }
+}
+
+
 class Draggable extends Lightning.Component {
     static _template(){
         return {
-            w: 100, h: 100, x: 100, y: 100,
+            w: 70, h: 70, x: 70, y: 70,
             TouchArea:{
-                w: 100, h: 100, rect: true,
-                shader:{
-                    type: Lightning.shaders.RoundedRectangle, radius: 50
-                }
-            },
-            Label:{ x: 120, y:38,
-                text:{
-                    fontSize:25
-                }
+                w: 70, h: 70,  alpha: 1,
+                src: Utils.asset('images/move.png')
             }
         }
     }
 
-    _init(){
-        this.a = this.tag("TouchArea").animation({
-            duration:1, repeat: -1, actions:[
-                {p:'alpha', rv: 1, v:{0:1, 0.65:1, 0.9:0.3, 1:1}},
-                {p:'scale', rv: 1, v:{0:1, 0.65:1, 0.9:0.9, 1:1}},
-            ]
-        });
-    }
-
     _onDragStart() {
-        this.restore = {x: this.x, y: this.y};
-        this.tag("Label").text = `Dragging started`
+        this.restore = {
+            x: this.x, y: this.y
+        };
         Automotive.lock([
             "_onDragStart",
             "_onDragEnd",
             "_onDrag"
         ])
-        this.a.start();
     }
 
     _onDragEnd() {
@@ -141,7 +192,7 @@ class Draggable extends Lightning.Component {
         setTimeout(()=>{
             this.patch({
                 smooth:{
-                    x: 100, y: 100
+                    x: 70, y: 70
                 },
                 Label:{
                     text:''
@@ -152,15 +203,16 @@ class Draggable extends Lightning.Component {
                     {p:'scale', v:{0:1, 0.5:0.4, 1:1}}
                 ]
             }).start();
-        },2500)
+            this.stage.emit('position',{
+                x: this.x, y: this.y, c: true
+            })
+        },500)
 
         Automotive.unlock([
             "_onDragStart",
             "_onDragEnd",
             "_onDrag"
         ])
-
-        this.a.stop();
     }
 
     _onDrag(recording) {
@@ -170,12 +222,9 @@ class Draggable extends Lightning.Component {
         this.x = startX + x;
         this.y = startY + y;
 
-        if(this.x > settings.w / 2){
-            this.tag("Label").setSmooth('x', -460, {duration:0.1});
-        }else{
-            this.tag("Label").setSmooth('x', 120, {duration:0.1});
-        }
-        this.tag("Label").text = `Dragging | x: ${this.x.toFixed(5)}  y: ${this.y.toFixed(5)}`
+        this.stage.emit('position',{
+            x: this.x, y: this.y
+        })
     }
 }
 

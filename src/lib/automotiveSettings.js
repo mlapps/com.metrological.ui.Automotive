@@ -33,6 +33,6 @@ export const settings = {
     touchQueueMaxLength: 250,
     w: window.innerWidth,
     h: window.innerHeight,
-    dragInterval:0,
+    dragInterval:0.1,
     ipad: true
 }

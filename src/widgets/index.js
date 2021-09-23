@@ -18,3 +18,4 @@
  */
 
 export {default as DemoSelector} from "./DemoSelector";
+export {default as Settings} from "./Settings";

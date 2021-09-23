@@ -18,10 +18,11 @@
  */
 
 import {Router, Utils} from "@lightningjs/sdk";
-import {Automotive} from "@lightningjs/automotive";
+import {Automotive} from "../../../Lightning-Automotive";
 import routes from "./lib/routes";
 import {settings} from "./lib/automotiveSettings";
-import {DemoSelector} from "./widgets";
+import {DemoSelector, Settings} from "./widgets";
+
 
 export default class App extends Router.App {
     static getFonts() {
@@ -60,18 +61,19 @@ export default class App extends Router.App {
                 forceZIndexContext: true, w: settings.w, h: settings.h
             },
             Widgets: {
-                zIndex:999,
-                DemoSelector:{ w: settings.w, h: settings.h,
+                zIndex:996,
+                DemoSelector:{
+                    w: settings.w, h: settings.h,
                     type: DemoSelector
+                },
+                Settings:{
+                    zIndex:997,
+                    w: settings.w, h: settings.h,
+                    type: Settings,
+                    x: settings.w / 2
                 }
             }
         };
-    }
-
-    _captureKey() {
-        this.stage.drawFrame();
-        this.core.render();
-        return false;
     }
 
     _handleAppClose() {
@@ -85,15 +87,6 @@ export default class App extends Router.App {
         })
     }
 
-    // _onDoubleTap(){
-    //     this.tag("DemoSelector").setSmooth('alpha',0, {
-    //         duration:0.3, delay:0
-    //     })
-    // }
-
-    /**
-     * Example of extending the Router.App StateMachine
-     */
     static _states() {
         const states = super._states();
         states.push(

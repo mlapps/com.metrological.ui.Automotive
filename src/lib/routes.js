@@ -31,6 +31,7 @@ export default {
         },{
             path: 'touchidentification',
             component: TouchIdentification,
+            widgets: ['Settings']
         }, {
             path: 'buttonsdemo',
             component: ButtonDemo,
