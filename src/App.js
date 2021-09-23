@@ -18,7 +18,7 @@
  */
 
 import {Router, Utils} from "@lightningjs/sdk";
-import {Automotive} from "../../../Lightning-Automotive";
+import {Automotive} from "@lightningjs/automotive";
 import routes from "./lib/routes";
 import {settings} from "./lib/automotiveSettings";
 import {DemoSelector, Settings} from "./widgets";
