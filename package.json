@@ -3,6 +3,7 @@
   "description": "AutoMotive",
   "dependencies": {
     "@lightningjs/automotive": "git+ssh://git@github.com/rdkcentral/Lightning-Automotive.git",
-    "@lightningjs/sdk": "^4.6.1"
+    "@lightningjs/sdk": "^4.6.1",
+    "@michieljs/execute-as-promise": "^1.0.0"
   }
 }
